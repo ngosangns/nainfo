@@ -1,0 +1,24 @@
+# Binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+*.a
+*.o
+*.h
+
+# Vendor directories
+vendor/
+
+# Go Work
+*.work
+
+# IDE specific files
+.idea/
+.vscode/
+
+# Environment files
+.env
