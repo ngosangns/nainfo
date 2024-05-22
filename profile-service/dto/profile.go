@@ -1,12 +1,12 @@
 package dto
 
 type UpdateProfileRequest struct {
-	Username string `json:"username" binding:"required"`
+	Username string `uri:"username" binding:"required"`
 	Email    string `json:"email" binding:"required,email"`
 }
 
 type ProfileResponse struct {
-	Username string `json:"username"`
+	Username string `uri:"username"`
 	Email    string `json:"email"`
 }
 

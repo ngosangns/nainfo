@@ -23,6 +23,15 @@ func (s *ProfileService) UpdateProfile(req dto.UpdateProfileRequest) error {
 	return s.profileRepo.Update(&profile)
 }
 
+func (s *ProfileService) UpdateOrCreateProfile(req dto.UpdateProfileRequest) error {
+	profile := model.Profile{
+		Username: req.Username,
+		Email:    req.Email,
+	}
+
+	return s.profileRepo.UpdateOrCreate(&profile)
+}
+
 func (s *ProfileService) GetProfile(username string) (*model.Profile, error) {
 	return s.profileRepo.FindByUsername(username)
 }

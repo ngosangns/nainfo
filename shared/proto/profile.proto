@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package profile;
+
+option go_package = "../../shared/proto";
+
+service ProfileService {
+  rpc GetProfile (GetProfileRequest) returns (ProfileResponse) {}
+  rpc UpdateProfile (UpdateProfileRequest) returns (Empty) {}
+  rpc UpdateOrCreateProfile (UpdateProfileRequest) returns (Empty) {}
+}
+
+message GetProfileRequest {
+  string username = 1;
+}
+
+message ProfileResponse {
+  string username = 1;
+  string email = 2;
+}
+
+message UpdateProfileRequest {
+  string username = 1;
+  string email = 2;
+}
+
+message Empty {}

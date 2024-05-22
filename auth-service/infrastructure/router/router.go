@@ -6,23 +6,22 @@ import (
 	"database/sql"
 	"shared/config"
 
-	"github.com/gin-gonic/gin"
+	_ "github.com/go-sql-driver/mysql"
 
-	swaggerFiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
+	"github.com/gin-gonic/gin"
 )
 
 func NewRouter() *gin.Engine {
 	r := gin.Default()
-	db, _ := sql.Open("mysql", config.MySQLDSN())
+	db, err := sql.Open("mysql", config.MySQLDSN())
+	if err != nil {
+		panic(err)
+	}
 	userRepository := persistence.NewMySQLUserRepository(db)
 	authHandler := handler.NewAuthHandler(userRepository)
 
-	r.POST("/login", authHandler.Login)
-	r.POST("/register", authHandler.Register)
-
-	// Swagger
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	r.POST("/auth/login", authHandler.Login)
+	r.POST("/auth/register", authHandler.Register)
 
 	return r
 }

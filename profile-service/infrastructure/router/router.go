@@ -3,26 +3,20 @@ package router
 import (
 	"database/sql"
 	"profile-service/application/handler"
-	"profile-service/infrastructure/persistence"
-	"shared/config"
+	"profile-service/domain/repository"
+
+	_ "github.com/go-sql-driver/mysql"
 
 	"github.com/gin-gonic/gin"
-	swaggerFiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
-func NewRouter() *gin.Engine {
+func NewRouter(db *sql.DB, profileRepository repository.ProfileRepository) *gin.Engine {
 	r := gin.Default()
 
-	db, _ := sql.Open("mysql", config.MySQLDSN())
-	profileRepository := persistence.NewMySQLProfileRepository(db)
 	profileHandler := handler.NewProfileHandler(profileRepository)
 
-	r.PUT("/profile", profileHandler.UpdateProfile)
-	r.GET("/profile/:username", profileHandler.GetProfile)
-
-	// Swagger
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	r.PUT("/profile/me", profileHandler.UpdateProfile)
+	r.GET("/profile/me", profileHandler.GetProfile)
 
 	return r
 }

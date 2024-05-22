@@ -1,6 +1,16 @@
 ### Tools
 
-- `go install github.com/swaggo/swag/cmd/swag@latest`
+- protoc-gen-go-grpc:
+
+```sh
+go install google.golang.org/grpc/cmd/protoc-gen-go_grpc@latest
+# If protoc-gen-go_grpc not found in PATH
+# Linux
+ln -s ~/.go/bin/protoc-gen-go-grpc ~/.go/bin/protoc-gen-go_grpc
+# Windows
+mklink %userprofile%\go\bin\protoc-gen-go_grpc.exe %userprofile%\go\bin\protoc-gen-go-grpc.exe
+```
+
 
 ### Running the Services
 

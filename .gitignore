@@ -22,3 +22,8 @@ vendor/
 
 # Environment files
 .env
+
+# Others
+node_modules/
+project-content.txt
+tmp/

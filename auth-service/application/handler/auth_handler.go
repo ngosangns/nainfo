@@ -1,9 +1,10 @@
 package handler
 
 import (
-	"auth-service/domain/model"
+	"auth-service/application/service"
 	"auth-service/domain/repository"
 	"auth-service/dto"
+	"fmt"
 	"net/http"
 	"shared/utils"
 
@@ -12,23 +13,15 @@ import (
 
 type AuthHandler struct {
 	userRepository repository.UserRepository
+	userService    *service.AuthService
 }
 
 func NewAuthHandler(userRepository repository.UserRepository) *AuthHandler {
-	return &AuthHandler{userRepository}
+	userService := service.NewAuthService(userRepository)
+
+	return &AuthHandler{userRepository, &userService}
 }
 
-// Login godoc
-// @Summary Login user
-// @Description Authenticate user and provide a token
-// @Tags auth
-// @Accept json
-// @Produce json
-// @Param login body dto.LoginRequest true "User login request"
-// @Success 200 {object} dto.LoginResponse
-// @Failure 400 {object} dto.ErrorResponse
-// @Failure 500 {object} dto.ErrorResponse
-// @Router /login [post]
 func (h *AuthHandler) Login(c *gin.Context) {
 	var req dto.LoginRequest
 
@@ -62,50 +55,22 @@ func (h *AuthHandler) Login(c *gin.Context) {
 	c.JSON(http.StatusOK, dto.LoginResponse{Token: token})
 }
 
-// Register godoc
-// @Summary Register a new user
-// @Description Create a new user
-// @Tags auth
-// @Accept json
-// @Produce json
-// @Param register body dto.RegisterRequest true "User register request"
-// @Success 200 {object} dto.RegisterResponse
-// @Failure 400 {object} dto.ErrorResponse
-// @Failure 500 {object} dto.ErrorResponse
-// @Router /register [post]
 func (h *AuthHandler) Register(c *gin.Context) {
 	var req dto.RegisterRequest
 
 	// Bind JSON to RegisterRequest struct
 	if err := c.ShouldBindJSON(&req); err != nil {
+		fmt.Println(err)
 		c.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
 		return
 	}
 
-	// Hash password
-	hashedPassword, err := utils.HashPassword(req.Password)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, dto.ErrorResponse{Error: "failed to hash password"})
-		return
-	}
-
-	// Create user model
-	user := &model.User{
-		Username: req.Username,
-		Password: hashedPassword,
-		Email:    req.Email,
-	}
-
 	// Save user
-	if err := h.userRepository.Save(user); err != nil {
+	if err := h.userService.Register(req); err != nil {
+		fmt.Println(err)
 		c.JSON(http.StatusInternalServerError, dto.ErrorResponse{Error: "failed to register user"})
 		return
 	}
 
-	// Respond with the registered user details
-	c.JSON(http.StatusOK, dto.RegisterResponse{
-		ID:       user.ID,
-		Username: user.Username,
-		Email:    user.Email,
-	})
+	c.Status(http.StatusNoContent)
 }
