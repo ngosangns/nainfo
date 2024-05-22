@@ -1,0 +1,56 @@
+graph LR
+  A[API Gateway]
+  subgraph Internal
+    subgraph Auth Service
+        subgraph Auth Handlers
+            C{Login}
+            D{Register}
+        end
+        subgraph Auth Services
+            EE{Login}
+            FF{Register}
+        end
+        subgraph Auth Repository
+            G{Save}
+            I{FindByUsername}
+        end
+    end
+    subgraph Profile Service
+        subgraph Profile Handlers
+            K{GetProfile}
+            L{UpdateProfile}
+        end
+        subgraph Profile Services
+            MM{GetProfile}
+            OO{UpdateOrCreateProfile}
+        end
+        subgraph Profile Repository
+            Q{UpdateOrCreate}
+            R{FindByUsername}
+        end
+    end
+    subgraph Database schemas
+        S[users]
+        T[profiles]
+    end
+  end
+
+  A --> C
+  C --> EE
+  EE --> G
+  G --> S
+  EE --> I
+  I --> S
+  A --> D
+  D --> FF
+  FF --> G
+  FF --> I
+  A --> K
+  K --> MM
+  MM --> R
+  MM --> Q
+  A --> L
+  L --> OO
+  OO --> Q
+  R --> T
+  Q --> T
