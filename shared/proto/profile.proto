@@ -15,8 +15,14 @@ message GetProfileRequest {
 }
 
 message ProfileResponse {
-  string username = 1;
-  string email = 2;
+  string name = 1;
+  string description = 2;
+  string username = 3;
+  string email = 4;
+  string address = 5;
+  string facebook = 6;
+  string linkedin = 7;
+  string github = 8;
 }
 
 message UpdateProfileRequest {

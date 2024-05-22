@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 	"os"
 	"profile-service/infrastructure/grpc"
@@ -32,9 +33,11 @@ func main() {
 	}
 
 	// Run the gRPC server
-	if err := grpc.RunGRPCServer(profileRepository); err != nil {
-		panic(err)
-	}
+	go (func() {
+		if err := grpc.RunGRPCServer(profileRepository); err != nil {
+			fmt.Println(err)
+		}
+	})()
 
 	// Run the HTTP server
 	log.Fatal(r.Run(addr))

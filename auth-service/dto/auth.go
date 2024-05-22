@@ -10,7 +10,6 @@ type LoginRequest struct {
 type RegisterRequest struct {
 	Username string `json:"username" binding:"required"`
 	Password string `json:"password" binding:"required"`
-	Email    string `json:"email" binding:"required,email"`
 }
 
 // LoginResponse represents the response payload for login.
@@ -22,7 +21,6 @@ type LoginResponse struct {
 type RegisterResponse struct {
 	ID       uint64 `json:"id"`
 	Username string `json:"username"`
-	Email    string `json:"email"`
 }
 
 // ErrorResponse represents a common error response.

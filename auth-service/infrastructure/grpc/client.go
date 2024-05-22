@@ -19,6 +19,7 @@ type ProfileClient struct {
 func NewProfileClient() (*ProfileClient, error) {
 	conn, err := grpc.NewClient(os.Getenv("PROFILE_SERVICE_GRPC_ADDRESS"), grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithIdleTimeout(time.Second))
 	if err != nil {
+		fmt.Println(err)
 		return nil, fmt.Errorf("failed to connect to profile server: %w", err)
 	}
 
@@ -29,6 +30,7 @@ func NewProfileClient() (*ProfileClient, error) {
 func (c *ProfileClient) GetProfile(username string) (*proto.ProfileResponse, error) {
 	resp, err := c.client.GetProfile(context.Background(), &proto.GetProfileRequest{Username: username})
 	if err != nil {
+		fmt.Println(err)
 		return nil, fmt.Errorf("failed to get profile: %w", err)
 	}
 
@@ -38,6 +40,7 @@ func (c *ProfileClient) GetProfile(username string) (*proto.ProfileResponse, err
 func (c *ProfileClient) UpdateProfile(req *proto.UpdateProfileRequest) error {
 	_, err := c.client.UpdateProfile(context.Background(), req)
 	if err != nil {
+		fmt.Println(err)
 		return fmt.Errorf("failed to update profile: %w", err)
 	}
 
@@ -46,8 +49,8 @@ func (c *ProfileClient) UpdateProfile(req *proto.UpdateProfileRequest) error {
 
 func (c *ProfileClient) UpdateOrCreateProfile(req *proto.UpdateProfileRequest) error {
 	_, err := c.client.UpdateOrCreateProfile(context.Background(), req)
-	fmt.Println("failed to update or create profile")
 	if err != nil {
+		fmt.Println(err)
 		return fmt.Errorf("failed to update or create profile: %w", err)
 	}
 

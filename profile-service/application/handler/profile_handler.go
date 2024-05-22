@@ -19,21 +19,28 @@ func NewProfileHandler(repo repository.ProfileRepository) *ProfileHandler {
 }
 
 func (h *ProfileHandler) UpdateProfile(c *gin.Context) {
+	username := c.Query("username")
+	if username == "" {
+		c.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: "username is required"})
+		return
+	}
+
 	var req dto.UpdateProfileRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		fmt.Println(err)
 		c.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
 		return
 	}
+	req.Username = username
 
-	err := h.profileService.UpdateProfile(req)
+	err := h.profileService.UpdateOrCreateProfile(req)
 	if err != nil {
 		fmt.Println(err)
 		c.JSON(http.StatusInternalServerError, dto.ErrorResponse{Error: err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, dto.MessageResponse{Message: "profile updated"})
+	c.Status(http.StatusNoContent)
 }
 
 func (h *ProfileHandler) GetProfile(c *gin.Context) {

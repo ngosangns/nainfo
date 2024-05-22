@@ -2,11 +2,11 @@ package main
 
 import (
 	"log"
+	"net/http"
 	"net/http/httputil"
 	"net/url"
 	"os"
 	"shared/middleware"
-	"strconv"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -37,15 +37,23 @@ func main() {
 	profileGroup := r.Group("/profile")
 	// Profile routes need authentication
 	profileGroup.Use(middleware.AuthMiddleware())
-	// Modify the request URL to include the username and userID in query params
+	// Modify the request URL to include the username in query params
 	profileGroup.Use(func(c *gin.Context) {
 		username, _ := c.Get("username")
-		userID, _ := c.Get("userID")
 
-		if c.Request.URL.RawQuery != "" {
-			c.Request.URL.RawQuery += "&"
+		// Get all query parameters into an object
+		values, err := url.ParseQuery(c.Request.URL.RawQuery)
+		if err != nil {
+			log.Printf("Error parsing query parameters: %v", err)
+			c.AbortWithStatus(http.StatusBadRequest)
+			return
 		}
-		c.Request.URL.RawQuery += "username=" + username.(string) + "&userID=" + strconv.FormatFloat(userID.(float64), 'f', -1, 64)
+
+		// Set the username field
+		values.Set("username", username.(string))
+
+		// Format the query string back
+		c.Request.URL.RawQuery = values.Encode()
 
 		c.Next()
 	})

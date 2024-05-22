@@ -6,20 +6,18 @@ import (
 	"auth-service/dto"
 	"fmt"
 	"net/http"
-	"shared/utils"
 
 	"github.com/gin-gonic/gin"
 )
 
 type AuthHandler struct {
-	userRepository repository.UserRepository
-	userService    *service.AuthService
+	userService *service.AuthService
 }
 
 func NewAuthHandler(userRepository repository.UserRepository) *AuthHandler {
 	userService := service.NewAuthService(userRepository)
 
-	return &AuthHandler{userRepository, &userService}
+	return &AuthHandler{&userService}
 }
 
 func (h *AuthHandler) Login(c *gin.Context) {
@@ -31,23 +29,11 @@ func (h *AuthHandler) Login(c *gin.Context) {
 		return
 	}
 
-	// Find user by username
-	user, err := h.userRepository.FindByUsername(req.Username)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, dto.ErrorResponse{Error: "invalid username or password"})
-		return
-	}
+	token, err := h.userService.Login(req)
 
-	// Compare passwords
-	if !utils.CheckPasswordHash(req.Password, user.Password) {
-		c.JSON(http.StatusUnauthorized, dto.ErrorResponse{Error: "invalid username or password"})
-		return
-	}
-
-	// Generate JWT token
-	token, err := utils.GenerateJWT(user.Username, user.ID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, dto.ErrorResponse{Error: "failed to generate token"})
+		fmt.Println(err)
+		c.JSON(http.StatusInternalServerError, dto.ErrorResponse{Error: "failed to login to user"})
 		return
 	}
 

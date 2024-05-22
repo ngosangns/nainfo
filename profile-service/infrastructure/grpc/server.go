@@ -37,7 +37,7 @@ func (s *profileServer) GetProfile(ctx context.Context, req *proto.GetProfileReq
 }
 
 func (s *profileServer) UpdateProfile(ctx context.Context, req *proto.UpdateProfileRequest) (*proto.Empty, error) {
-	err := s.profileService.UpdateProfile(dto.UpdateProfileRequest{
+	err := s.profileService.UpdateOrCreateProfile(dto.UpdateProfileRequest{
 		Username: req.Username,
 		Email:    req.Email,
 	})
@@ -49,7 +49,6 @@ func (s *profileServer) UpdateProfile(ctx context.Context, req *proto.UpdateProf
 }
 
 func (s *profileServer) UpdateOrCreateProfile(ctx context.Context, req *proto.UpdateProfileRequest) (*proto.Empty, error) {
-	fmt.Println("asdsadasdad")
 	err := s.profileService.UpdateOrCreateProfile(dto.UpdateProfileRequest{
 		Username: req.Username,
 		Email:    req.Email,

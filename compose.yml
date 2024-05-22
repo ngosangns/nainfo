@@ -12,8 +12,6 @@ services:
       MYSQL_DATABASE: dbname
       MYSQL_USER: user
       MYSQL_PASSWORD: password
-    ports:
-      - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -34,8 +32,6 @@ services:
       - ./shared:/shared
     working_dir: /app
     command: air
-    ports:
-      - "8000:8000"
     networks:
       - nainfo
 
@@ -52,8 +48,6 @@ services:
       - ./shared:/shared
     working_dir: /app
     command: air
-    ports:
-      - "8001:8001"
     networks:
       - nainfo
 

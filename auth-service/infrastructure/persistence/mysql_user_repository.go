@@ -30,13 +30,13 @@ func (r *MySQLUserRepository) Save(user *model.User) error {
 }
 
 func (r *MySQLUserRepository) SaveWithTx(tx *sql.Tx, user *model.User) error {
-	_, err := tx.Exec("INSERT INTO users (username, password, email) VALUES (?, ?, ?)", user.Username, user.Password, user.Email)
+	_, err := tx.Exec("INSERT INTO users (username, password) VALUES (?, ?)", user.Username, user.Password)
 	return err
 }
 
 func (r *MySQLUserRepository) FindByUsername(username string) (*model.User, error) {
 	var user model.User
-	err := r.db.QueryRow("SELECT id, username, password, email FROM users WHERE username = ?", username).Scan(&user.ID, &user.Username, &user.Password, &user.Email)
+	err := r.db.QueryRow("SELECT id, username, password FROM users WHERE username = ?", username).Scan(&user.ID, &user.Username, &user.Password)
 	if err != nil {
 		return nil, err
 	}

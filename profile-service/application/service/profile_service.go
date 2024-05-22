@@ -1,6 +1,7 @@
 package service
 
 import (
+	"database/sql"
 	"profile-service/domain/model"
 	"profile-service/domain/repository"
 	"profile-service/dto"
@@ -33,5 +34,20 @@ func (s *ProfileService) UpdateOrCreateProfile(req dto.UpdateProfileRequest) err
 }
 
 func (s *ProfileService) GetProfile(username string) (*model.Profile, error) {
-	return s.profileRepo.FindByUsername(username)
+	profile, err := s.profileRepo.FindByUsername(username)
+
+	// Create if not exist
+	if err != nil && err == sql.ErrNoRows {
+		err = s.UpdateOrCreateProfile(dto.UpdateProfileRequest{Username: username})
+		if err != nil {
+			return nil, err
+		}
+		profile, err = s.profileRepo.FindByUsername(username)
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	return profile, nil
 }

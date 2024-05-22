@@ -5,7 +5,6 @@ import (
 	"auth-service/domain/repository"
 	"auth-service/dto"
 	"auth-service/infrastructure/grpc"
-	"shared/proto"
 	"shared/utils"
 
 	"golang.org/x/crypto/bcrypt"
@@ -52,7 +51,6 @@ func (s *AuthService) Register(req dto.RegisterRequest) error {
 	user := model.User{
 		Username: req.Username,
 		Password: string(hashedPassword),
-		Email:    req.Email,
 	}
 
 	tx, err := s.userRepo.StartTransaction()
@@ -73,14 +71,14 @@ func (s *AuthService) Register(req dto.RegisterRequest) error {
 	}
 
 	// Register user in profile-service using gRPC
-	err = s.profileClient.UpdateOrCreateProfile(&proto.UpdateProfileRequest{
-		Username: req.Username,
-		Email:    req.Email,
-	})
-	if err != nil {
-		transactionFailed = true
-		return err
-	}
+	// err = s.profileClient.UpdateOrCreateProfile(&proto.UpdateProfileRequest{
+	// 	Username: req.Username,
+	// 	Email:    req.Email,
+	// })
+	// if err != nil {
+	// 	transactionFailed = true
+	// 	return err
+	// }
 
 	// Commit transaction
 	if err := tx.Commit(); err != nil {
