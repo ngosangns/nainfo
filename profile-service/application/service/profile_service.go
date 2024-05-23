@@ -26,8 +26,14 @@ func (s *ProfileService) UpdateProfile(req dto.UpdateProfileRequest) error {
 
 func (s *ProfileService) UpdateOrCreateProfile(req dto.UpdateProfileRequest) error {
 	profile := model.Profile{
-		Username: req.Username,
-		Email:    req.Email,
+		Username:    req.Username,
+		Email:       req.Email,
+		Name:        req.Name,
+		Description: req.Description,
+		Address:     req.Address,
+		Facebook:    req.Facebook,
+		LinkedIn:    req.LinkedIn,
+		GitHub:      req.GitHub,
 	}
 
 	return s.profileRepo.UpdateOrCreate(&profile)

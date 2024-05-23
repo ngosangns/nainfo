@@ -53,7 +53,7 @@ func (r *MySQLProfileRepository) Update(profile *model.Profile) error {
 }
 
 func (r *MySQLProfileRepository) UpdateOrCreate(profile *model.Profile) error {
-	// Find the user by username
+	// Find the profile by username
 	result := r.db.QueryRow("SELECT id FROM profiles WHERE username = ?", profile.Username)
 	var id uint64
 	err := result.Scan(&id)

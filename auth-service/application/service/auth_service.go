@@ -5,7 +5,6 @@ import (
 	"auth-service/domain/repository"
 	"auth-service/dto"
 	"auth-service/infrastructure/grpc"
-	"shared/utils"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -24,22 +23,17 @@ func NewAuthService(repo repository.UserRepository) AuthService {
 	return AuthService{userRepo: repo, profileClient: profileClient}
 }
 
-func (s *AuthService) Login(req dto.LoginRequest) (string, error) {
+func (s *AuthService) Login(req dto.LoginRequest) (*model.User, error) {
 	user, err := s.userRepo.FindByUsername(req.Username)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password)); err != nil {
-		return "", err
+		return nil, err
 	}
 
-	token, err := utils.GenerateJWT(user.Username, user.ID)
-	if err != nil {
-		return "", err
-	}
-
-	return token, nil
+	return user, nil
 }
 
 func (s *AuthService) Register(req dto.RegisterRequest) error {

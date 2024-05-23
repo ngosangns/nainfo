@@ -6,6 +6,7 @@ import (
 	"auth-service/dto"
 	"fmt"
 	"net/http"
+	"shared/utils"
 
 	"github.com/gin-gonic/gin"
 )
@@ -29,8 +30,14 @@ func (h *AuthHandler) Login(c *gin.Context) {
 		return
 	}
 
-	token, err := h.userService.Login(req)
+	user, err := h.userService.Login(req)
+	if err != nil {
+		fmt.Println(err)
+		c.JSON(http.StatusInternalServerError, dto.ErrorResponse{Error: "failed to login to user"})
+		return
+	}
 
+	token, err := utils.GenerateJWT(user.Username, user.ID)
 	if err != nil {
 		fmt.Println(err)
 		c.JSON(http.StatusInternalServerError, dto.ErrorResponse{Error: "failed to login to user"})
