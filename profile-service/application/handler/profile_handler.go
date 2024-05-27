@@ -53,5 +53,14 @@ func (h *ProfileHandler) GetProfile(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, dto.ProfileResponse{Username: profile.Username, Email: profile.Email})
+	c.JSON(http.StatusOK, dto.ProfileResponse{
+		Username:    profile.Username,
+		Email:       profile.Email,
+		Name:        profile.Name,
+		Description: profile.Description,
+		Address:     profile.Address,
+		Facebook:    profile.Facebook,
+		LinkedIn:    profile.LinkedIn,
+		GitHub:      profile.GitHub,
+	})
 }

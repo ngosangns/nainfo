@@ -23,7 +23,9 @@ func (r *MySQLProfileRepository) Create(profile *model.Profile) error {
 		profile.Email,
 		profile.Address,
 		profile.Facebook,
-		profile.LinkedIn, profile.GitHub)
+		profile.LinkedIn,
+		profile.GitHub,
+	)
 	if err != nil {
 		return err
 	}
@@ -48,7 +50,9 @@ func (r *MySQLProfileRepository) Update(profile *model.Profile) error {
 		profile.Address,
 		profile.Facebook,
 		profile.LinkedIn,
-		profile.GitHub, profile.Username)
+		profile.GitHub,
+		profile.Username,
+	)
 	return err
 }
 

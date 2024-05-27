@@ -16,7 +16,15 @@ func main() {
 	r := gin.Default()
 
 	// Enable CORS
-	r.Use(cors.Default())
+	corsConfig := cors.Config{
+		AllowHeaders: []string{
+			"Authorization",
+			"Content-Type",
+		},
+	}
+	corsConfig.AllowAllOrigins = true
+	corsConfig.AllowMethods = append(corsConfig.AllowMethods, "OPTIONS", "PUT", "POST", "GET", "DELETE")
+	r.Use(cors.New(corsConfig))
 
 	authServiceAddress := os.Getenv("AUTH_SERVICE_ADDRESS")
 	profileServiceAddress := os.Getenv("PROFILE_SERVICE_ADDRESS")
