@@ -25,6 +25,7 @@ MYSQL_DSN=user:password@host:port/dbname
 JWT_SECRET=your_secret_key
 AUTH_SERVICE_ADDRESS=:8000
 PROFILE_SERVICE_GRPC_ADDRESS=:50051
+WEB_SERVICE_ADDRESS="http://host.docker.internal:4200"
 PROFILE_SERVICE_ADDRESS=:8001
 ```
 

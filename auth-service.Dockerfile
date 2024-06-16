@@ -5,7 +5,7 @@ COPY auth-service/go.mod auth-service/go.sum ./
 COPY ./shared /shared
 
 RUN go mod download
-RUN go install github.com/cosmtrek/air@latest
+RUN go install github.com/air-verse/air@latest
 RUN rm -rf /shared
 
 EXPOSE 8000
