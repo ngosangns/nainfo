@@ -18,8 +18,6 @@ import (
 // @BasePath /
 
 func main() {
-	config.Load() // Load configuration
-
 	db, err := sql.Open("mysql", config.MySQLDSN())
 	if err != nil {
 		panic(err)

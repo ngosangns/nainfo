@@ -1,21 +1,42 @@
 package handler
 
 import (
+	"context"
 	"fmt"
+	"log"
 	"net/http"
 	"profile-service/application/service"
 	"profile-service/domain/repository"
 	"profile-service/dto"
+	"shared/config"
 
 	"github.com/gin-gonic/gin"
+	"github.com/minio/minio-go/v7"
+	"github.com/minio/minio-go/v7/pkg/credentials"
 )
 
 type ProfileHandler struct {
 	profileService service.ProfileService
+	minioClient    *minio.Client
 }
 
 func NewProfileHandler(repo repository.ProfileRepository) *ProfileHandler {
-	return &ProfileHandler{profileService: service.NewProfileService(repo)}
+	// MinIO Setup
+	endpoint := config.MinIOHost()             // Replace with your MinIO endpoint
+	accessKeyID := config.MinIOAccessKey()     // Replace with your MinIO access key
+	secretAccessKey := config.MinIOSecretKey() // Replace with your MinIO secret key
+	useSSL := false
+
+	// Initialize MinIO client object.
+	minioClient, err := minio.New(endpoint, &minio.Options{
+		Creds:  credentials.NewStaticV4(accessKeyID, secretAccessKey, ""),
+		Secure: useSSL,
+	})
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	return &ProfileHandler{profileService: service.NewProfileService(repo), minioClient: minioClient}
 }
 
 func (h *ProfileHandler) UpdateProfile(c *gin.Context) {
@@ -62,5 +83,50 @@ func (h *ProfileHandler) GetProfile(c *gin.Context) {
 		Facebook:    profile.Facebook,
 		LinkedIn:    profile.LinkedIn,
 		GitHub:      profile.GitHub,
+	})
+}
+
+func (h *ProfileHandler) UploadAvatar(c *gin.Context) {
+	// Retrieve the file from the request
+	file, err := c.FormFile("avatar")
+	if err != nil {
+		c.String(http.StatusBadRequest, fmt.Sprintf("get form err: %s", err.Error()))
+		return
+	}
+
+	// Open the file
+	openedFile, err := file.Open()
+	if err != nil {
+		c.String(http.StatusInternalServerError, fmt.Sprintf("open file err: %s", err.Error()))
+		return
+	}
+	defer openedFile.Close()
+
+	// Upload the file to MinIO
+	objectName := file.Filename
+	bucketName := config.MinIOBucketName()
+	_, err = h.minioClient.PutObject(
+		context.Background(),
+		bucketName,
+		objectName,
+		openedFile,
+		file.Size,
+		minio.PutObjectOptions{ContentType: file.Header.Get("Content-Type")},
+	)
+	if err != nil {
+		c.String(http.StatusInternalServerError, fmt.Sprintf("upload to minio err: %s", err.Error()))
+		return
+	}
+
+	// Generate the public URL
+	url, err := h.minioClient.PresignedGetObject(context.Background(), config.MinIOBucketName(), objectName, 7*24*60*60, nil) // Expire after 7 days
+	if err != nil {
+		c.String(http.StatusInternalServerError, fmt.Sprintf("generate presigned url err: %s", err.Error()))
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Avatar uploaded successfully",
+		"url":     url.String(),
 	})
 }

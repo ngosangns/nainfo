@@ -58,6 +58,10 @@ services:
     environment:
       AUTH_SERVICE_ADDRESS: "${AUTH_SERVICE_ADDRESS}"
       PROFILE_SERVICE_ADDRESS: "${PROFILE_SERVICE_ADDRESS}"
+      MINIO_HOST: "${MINIO_HOST}"
+      MINIO_ACCESS_KEY: "${MINIO_ACCESS_KEY}"
+      MINIO_SECRET_KEY: "${MINIO_SECRET_KEY}"
+      MINIO_BUCKET_NAME: "${MINIO_BUCKET_NAME}"
     volumes:
       - ./api-gateway:/app
       - ./shared:/shared
@@ -79,5 +83,20 @@ services:
     networks:
       - nainfo
 
+  storage:
+    image: minio/minio
+    command: server /data --console-address ":9001"
+    ports:
+      - "9001:9001"
+      - "9000:9000"
+    environment:
+      MINIO_ROOT_USER: "user"
+      MINIO_ROOT_PASSWORD: "password"
+    volumes:
+      - minio_data:/data
+    networks:
+      - nainfo
+
 volumes:
   mysql_data:
+  minio_data:

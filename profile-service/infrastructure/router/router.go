@@ -17,6 +17,7 @@ func NewRouter(db *sql.DB, profileRepository repository.ProfileRepository) *gin.
 
 	r.PUT("/profile/me", profileHandler.UpdateProfile)
 	r.GET("/profile/me", profileHandler.GetProfile)
+	r.POST("/profile/avatar/upload", profileHandler.UploadAvatar)
 
 	return r
 }

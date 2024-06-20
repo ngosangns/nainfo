@@ -4,7 +4,6 @@ import (
 	"auth-service/infrastructure/router"
 	"log"
 	"os"
-	"shared/config"
 )
 
 // @title Auth Service API
@@ -13,7 +12,6 @@ import (
 // @host localhost:8000
 // @BasePath /
 func main() {
-	config.Load()           // Load configuration
 	r := router.NewRouter() // Create router
 	addr := os.Getenv("AUTH_SERVICE_ADDRESS")
 	if addr == "" {
